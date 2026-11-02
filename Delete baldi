@@ -1,0 +1,71 @@
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+
+local Rayfield = loadstring(game:HttpGet(
+    "https://sirius.menu/rayfield"
+))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "THE EVIL J | Baldi Classic Hub",
+    LoadingTitle = "Baldi Classic Hub",
+    LoadingSubtitle = "THE EVIL J",
+    ConfigurationSaving = {
+        Enabled = false
+    }
+})
+
+local Tab = Window:CreateTab("Main", 4483362458)
+
+local function removeBaldi()
+    local count = 0
+
+    for _, obj in ipairs(Workspace:GetDescendants()) do
+        if obj:IsA("Model") then
+            local name = obj.Name:lower()
+
+            if name:find("baldi") or name:find("teacher") then
+                if not Players:GetPlayerFromCharacter(obj) then
+                    obj:Destroy()
+                    count += 1
+                end
+            end
+        end
+    end
+
+    return count
+end
+
+Tab:CreateButton({
+    Name = "Delete Baldi",
+    Callback = function()
+        local count = removeBaldi()
+        Rayfield:Notify({
+            Title = "Baldi Classic",
+            Content = "Removed: " .. count,
+            Duration = 3
+        })
+    end
+})
+
+Tab:CreateToggle({
+    Name = "Auto Delete Baldi",
+    CurrentValue = false,
+    Callback = function(Value)
+        getgenv().AutoDeleteBaldi = Value
+
+        if Value then
+            task.spawn(function()
+                while getgenv().AutoDeleteBaldi do
+                    removeBaldi()
+                    task.wait(1)
+                end
+            end)
+        end
+    end
+})
+
+Rayfield:Notify({
+    Title = "THE EVIL J",
+    Content = "Baldi Classic Hub Loaded!",
+    Duration = 4
+})
